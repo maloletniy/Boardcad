@@ -6,5 +6,5 @@ BoardCAD is an easy to use(not really) CAD/CAM-program that allows you to quickl
 This repo is based on original boardcad source from sourceforge (commit r405)
 
 # Fixed:
-Export to DXF \ STL
-Import from Shape3D (version v8 only). Please also note that it fails if you try to open a folder containing non V8 versions of *.s3d 
+* Export to DXF \ STL
+* Import from Shape3D (version v8 only). Please also note that it fails if you try to open a folder containing non V8 versions of *.s3d 
