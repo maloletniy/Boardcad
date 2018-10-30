@@ -1,5 +1,7 @@
 *.iml
-.idea
-out
-target
-cachedir
+/out
+/target
+**/cachedir/
+.idea/
+build/
+.gradle/
