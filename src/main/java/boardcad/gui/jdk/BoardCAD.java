@@ -1399,7 +1399,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
 
         // Insert 16x16 Icon on JFrame
         try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("../../icons/BoardCAD png 16x16 upright.png"));
+            ImageIcon icon = new ImageIcon(getClass().getResource("/icons/BoardCAD png 16x16 upright.png"));
             mFrame.setIconImage(icon.getImage());
         } catch (Exception e) {
             System.out.println("Jframe Icon error:\n" + e.getMessage());
@@ -1518,7 +1518,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
             static final long serialVersionUID = 1L;
             {
                 this.putValue(Action.NAME, LanguageResource.getString("BOARDSAVEAS_STR"));
-                this.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/save-as.png")));
+                this.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/save-as.png")));
             };
 
             public void actionPerformed(final ActionEvent arg0) {
@@ -3655,7 +3655,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
             {
                 this.putValue(Action.NAME, LanguageResource.getString("UNDO_STR"));
                 this.putValue(Action.SHORT_DESCRIPTION, LanguageResource.getString("UNDO_STR"));
-                this.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/edit-undo.png")));
+                this.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/edit-undo.png")));
                 this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK));
             };
 
@@ -3673,7 +3673,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
             {
                 this.putValue(Action.NAME, LanguageResource.getString("REDO_STR"));
                 this.putValue(Action.SHORT_DESCRIPTION, LanguageResource.getString("REDO_STR"));
-                this.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/edit-redo.png")));
+                this.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/edit-redo.png")));
 
                 this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK));
             };
@@ -5019,7 +5019,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
             static final long serialVersionUID = 1L;
             {
                 this.putValue(Action.NAME, LanguageResource.getString("ONLINEHELP_STR"));
-                this.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/Help16.gif")));
+                this.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/Help16.gif")));
                 // this.putValue(Action.ACCELERATOR_KEY,
                 // KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0));
             };
@@ -5038,7 +5038,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
                 this.putValue(Action.NAME, LanguageResource.getString("ABOUT_STR"));
                 this.putValue(
                         AbstractAction.SMALL_ICON,
-                        new ImageIcon(getClass().getResource("../../icons/Information16.gif")));
+                        new ImageIcon(getClass().getResource("/icons/Information16.gif")));
                 // this.putValue(Action.ACCELERATOR_KEY,
                 // KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0));
             };
@@ -5059,19 +5059,19 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
 
         mToolBar = new JToolBar();
 
-        newBrd.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/new.png")));
+        newBrd.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/new.png")));
         mToolBar.add(newBrd);
 
-        loadBrd.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/open.png")));
+        loadBrd.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/open.png")));
         mToolBar.add(loadBrd);
 
-        saveBrd.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/save.png")));
+        saveBrd.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/save.png")));
         mToolBar.add(saveBrd);
 
-        SaveBrd.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/save-refresh.png")));
+        SaveBrd.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/save-refresh.png")));
         mToolBar.add(SaveBrd);
 
-        printSpecSheet.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/print.png")));
+        printSpecSheet.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/print.png")));
         mToolBar.add(printSpecSheet);
 
         mToolBar.addSeparator();
@@ -5080,7 +5080,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
         final SetCurrentOneShotCommandAction zoom = new SetCurrentOneShotCommandAction(new BrdZoomCommand());
         zoom.putValue(AbstractAction.NAME, LanguageResource.getString("ZOOMBUTTON_STR"));
         zoom.putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("ZOOMBUTTON_STR"));
-        zoom.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/zoom-in.png")));
+        zoom.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/zoom-in.png")));
         mToolBar.add(zoom);
 
         final AbstractAction fit = new AbstractAction() {
@@ -5096,12 +5096,12 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
         };
         fit.putValue(AbstractAction.NAME, LanguageResource.getString("FITBUTTON_STR"));
         fit.putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("FITBUTTON_STR"));
-        fit.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/zoom-fit-best.png")));
+        fit.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/zoom-fit-best.png")));
         mToolBar.add(fit);
         popupMenu.add(fit);
 
         mLifeSizeButton = new JToggleButton();
-        mLifeSizeButton.setIcon(new ImageIcon(getClass().getResource("../../icons/zoom-1to1.png")));
+        mLifeSizeButton.setIcon(new ImageIcon(getClass().getResource("/icons/zoom-1to1.png")));
 
         mLifeSizeButton.addMouseListener(new MouseAdapter() {
 
@@ -5136,7 +5136,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
 
         mLifeSizeButton.addChangeListener(lifeSizeChangeListner);
         // lifeSize.putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("LIFESIZEBUTTON_STR"));
-        // lifeSize.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/zoom-fit-best.png")));
+        // lifeSize.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/zoom-fit-best.png")));
         mToolBar.add(mLifeSizeButton);
 
         mToolBar.addSeparator();
@@ -5147,17 +5147,17 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
         final SetCurrentCommandAction edit = new SetCurrentCommandAction(new BrdEditCommand());
         edit.putValue(AbstractAction.NAME, LanguageResource.getString("EDITBUTTON_STR"));
         edit.putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("EDITBUTTON_STR"));
-        edit.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/BoardCADedit24.gif")));
+        edit.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/BoardCADedit24.gif")));
         mToolBar.add(edit);
         // popupMenu.add(edit);
 
-        // JButton bt = new JButton(new ImageIcon("../../icons/Zoom24.gif"));
+        // JButton bt = new JButton(new ImageIcon("/icons/Zoom24.gif"));
         // mToolBar.add(bt);
 
         final SetCurrentCommandAction pan = new SetCurrentCommandAction(new BrdPanCommand());
         pan.putValue(AbstractAction.NAME, LanguageResource.getString("PANBUTTON_STR"));
         pan.putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("PANBUTTON_STR"));
-        pan.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/BoardCADpan24.gif")));
+        pan.putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/BoardCADpan24.gif")));
 
         mToolBar.add(pan);
 
@@ -5166,7 +5166,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
         rotate_view.putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("ROTATEVIEWBUTTON_STR"));
         rotate_view.putValue(
                 AbstractAction.SMALL_ICON,
-                new ImageIcon(getClass().getResource("../../icons/BoardCADrotateview24.gif")));
+                new ImageIcon(getClass().getResource("/icons/BoardCADrotateview24.gif")));
 
         mToolBar.add(rotate_view);
 
@@ -5259,7 +5259,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
                 .putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("TOGGLEDECKBOTTOMBUTTON_STR"));
         toggleDeckAndBottom.putValue(
                 AbstractAction.SMALL_ICON,
-                new ImageIcon(getClass().getResource("../../icons/BoardCADtoggle24x35.png")));
+                new ImageIcon(getClass().getResource("/icons/BoardCADtoggle24x35.png")));
         mToolBar.add(toggleDeckAndBottom);
         popupMenu.add(toggleDeckAndBottom);
 
@@ -5269,7 +5269,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
         addGuidePoint.putValue(AbstractAction.NAME, LanguageResource.getString("ADDGUIDEPOINTBUTTON_STR"));
         addGuidePoint.putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("ADDGUIDEPOINTBUTTON_STR"));
         addGuidePoint
-                .putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/add-guidepoint.png")));
+                .putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/add-guidepoint.png")));
         mToolBar.add(addGuidePoint);
         popupMenu.add(addGuidePoint);
         popupMenu.add(guidePoints);
@@ -5278,7 +5278,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
         addControlPoint.putValue(AbstractAction.NAME, LanguageResource.getString("ADDCONTROLPOINTBUTTON_STR"));
         addControlPoint.putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("ADDCONTROLPOINTBUTTON_STR"));
         addControlPoint
-                .putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("../../icons/add-controlpoint.png")));
+                .putValue(AbstractAction.SMALL_ICON, new ImageIcon(getClass().getResource("/icons/add-controlpoint.png")));
         mToolBar.add(addControlPoint);
         popupMenu.add(addControlPoint);
 
@@ -5347,7 +5347,7 @@ public class BoardCAD implements Runnable, ActionListener, ItemListener, KeyEven
                 .putValue(AbstractAction.SHORT_DESCRIPTION, LanguageResource.getString("DELETECONTROLPOINTSBUTTON_STR"));
         deleteControlPoint.putValue(
                 AbstractAction.SMALL_ICON,
-                new ImageIcon(getClass().getResource("../../icons/remove-controlpoint.png")));
+                new ImageIcon(getClass().getResource("/icons/remove-controlpoint.png")));
         mToolBar.add(deleteControlPoint);
         popupMenu.add(deleteControlPoint);
 

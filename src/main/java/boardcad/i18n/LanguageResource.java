@@ -18,7 +18,7 @@ public class LanguageResource {
         String languageStr = prefs.get("Language", "en");
 
         Locale l = new Locale(languageStr, "");
-        RESOURCE_BUNDLE = ResourceBundle.getBundle("boardcad.i18n.LanguageResource", l);
+        RESOURCE_BUNDLE = ResourceBundle.getBundle("LanguageResource", l);
         System.out.printf("Resource language %s\n", RESOURCE_BUNDLE.getLocale().getLanguage());
     }
 
