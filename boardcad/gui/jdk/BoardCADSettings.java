@@ -1,33 +1,30 @@
 package boardcad.gui.jdk;
 
-import boardcad.settings.*;
+import boardcad.settings.CategorizedSettings;
+import boardcad.settings.Settings;
 
-class BoardCADSettings extends CategorizedSettings
-{
+class BoardCADSettings extends CategorizedSettings {
 
-	static private BoardCADSettings mInstance = null;
+    static private BoardCADSettings mInstance = null;
 
-	public static BoardCADSettings getInstance()
-	{
-		if(mInstance == null) {
-			mInstance = new BoardCADSettings();
-		}
-		return mInstance;
-	}
+    protected BoardCADSettings() {
+        super();
+        Settings.SettingChangedCallback defaultCallback = new Settings.SettingChangedCallback() {
 
-	protected BoardCADSettings() 
-	{
-		super();
-		Settings.SettingChangedCallback defaultCallback = new Settings.SettingChangedCallback()
-		{
+            public void onSettingChanged(final Object obj) {
+                BoardCAD.getInstance().onSettingsChanged();
+            }
 
-			public void onSettingChanged(final Object obj) {
-				BoardCAD.getInstance().onSettingsChanged();
-			}
+        };
+        setDefaultCallback(defaultCallback);
 
-		};
-		setDefaultCallback(defaultCallback);
+    }
 
-	}
+    public static BoardCADSettings getInstance() {
+        if (mInstance == null) {
+            mInstance = new BoardCADSettings();
+        }
+        return mInstance;
+    }
 
 };

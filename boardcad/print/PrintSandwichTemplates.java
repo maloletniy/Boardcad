@@ -1,10 +1,8 @@
 package boardcad.print;
 
-
-
 /**
 
- * @author Håvard
+ * @author Hï¿½vard
 
  *
 
@@ -29,530 +27,585 @@ import java.awt.print.PrinterJob;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 
-import cadcore.UnitUtils;
-
 import board.BezierBoard;
-import boardcad.i18n.LanguageResource;
-
 import boardcad.gui.jdk.BezierBoardDrawUtil;
 import boardcad.gui.jdk.BoardCAD;
 import boardcad.gui.jdk.JavaDraw;
+import boardcad.i18n.LanguageResource;
+import cadcore.UnitUtils;
 
 public class PrintSandwichTemplates extends JComponent implements Printable {
 
-	static final long serialVersionUID=1L;
+    static final long serialVersionUID = 1L;
+    public PrintState mCurrentPrintState;
+    private PageFormat myPageFormat;
+    private PrinterJob myPrintJob;;
+    private Font mPrintFontSmall = new Font("Dialog", Font.PLAIN, 10);
+    private double mSkinThickness = 0.8;
+    private double mDistanceToRail = 3.0;
+    private double mTailOffset = 3.0;
+    private double mNoseOffset = 4.0;
+    private double mCrosssectionPos = 3.0;
+    private boolean mFlatten = false;
+    private double mProfileOffset = 0.0;
+    /** Creates and initializes the ClickMe component. */
 
-	 private PageFormat myPageFormat;
-	 private PrinterJob myPrintJob;
+    public PrintSandwichTemplates() {
 
-	protected enum PrintState {NO_STATE, 
-		PRINT_DECKSKIN_TEMPLATE,				
-		PRINT_BOTTOMSKIN_TEMPLATE,			
-		PRINT_RAIL_TEMPLATE,
-		PRINT_PROFILE_TEMPLATE,
-		PRINT_CROSSSECTION_TEMPLATE
-	};
+        // Hint at good sizes for this component.
 
-	public PrintState mCurrentPrintState;
-	
-	private Font mPrintFontSmall = new Font("Dialog", Font.PLAIN, 10);
+        setPreferredSize(new Dimension(800, 600));
 
-	private double mSkinThickness = 0.8;
-	private double mDistanceToRail = 3.0;
-	private double mTailOffset = 3.0;
-	private double mNoseOffset = 4.0;
-	private double mCrosssectionPos = 3.0;
-	private boolean mFlatten = false;
-	private double mProfileOffset = 0.0;
-	
+        setMinimumSize(new Dimension(600, 480));
 
-	/** Creates and initializes the ClickMe component. */
+        // Request a black line around this component.
 
-	public PrintSandwichTemplates() {
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-//		Hint at good sizes for this component.
+    }
 
-		setPreferredSize(new Dimension(800, 600));
+    public BezierBoard getBrd() {
 
-		setMinimumSize(new Dimension(600, 480));
+        return BoardCAD.getInstance().getCurrentBrd();
 
-//		Request a black line around this component.
+    }
 
-		setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    void initPrint() {
+        myPrintJob = PrinterJob.getPrinterJob();
 
-	}
+        myPageFormat = PrintBrd.getPageFormat(this, myPrintJob, BoardCAD.getInstance().getCurrentBrd().getMaxRocker());
+        if (myPageFormat == null) return;
 
+        myPrintJob.setPrintable(this, myPageFormat);
+    }
 
+    public void printProfileTemplate(double skinThickness, boolean flatten, double offset) {
 
-	 public BezierBoard getBrd() {
+        initPrint();
 
-		return BoardCAD.getInstance().getCurrentBrd();
+        try {
 
-	}
-	 
-	 void initPrint()
-	 {
-			myPrintJob = PrinterJob.getPrinterJob();
+            mSkinThickness = skinThickness;
+            mFlatten = flatten;
+            mProfileOffset = offset;
+            mCurrentPrintState = PrintState.PRINT_PROFILE_TEMPLATE;
 
-			myPageFormat = PrintBrd.getPageFormat(this, myPrintJob, BoardCAD.getInstance().getCurrentBrd().getMaxRocker());
-			if(myPageFormat == null)
-				return;
-			
-			
-			myPrintJob.setPrintable(this,myPageFormat);		 
-	 }
+            myPrintJob.print();
 
-	 public void printProfileTemplate(double skinThickness, boolean flatten, double offset) {
+        } catch (PrinterException pe) {
 
-		 initPrint();
+            System.out.println("Error printing: " + pe);
 
-			try {
+        }
 
-				mSkinThickness = skinThickness;
-				mFlatten = flatten;
-				mProfileOffset = offset;
-				mCurrentPrintState = PrintState.PRINT_PROFILE_TEMPLATE;
+    }
 
-				myPrintJob.print();
+    public void printRailTemplate(
+            double distanceFromRail,
+            double skinThickness,
+            double tailOffset,
+            double noseOffset,
+            boolean flatten) {
+        initPrint();
 
-			} catch(PrinterException pe) {
+        try {
 
-				System.out.println("Error printing: " + pe);
+            mDistanceToRail = distanceFromRail;
+            mSkinThickness = skinThickness;
+            mTailOffset = tailOffset;
+            mNoseOffset = noseOffset;
+            mFlatten = flatten;
+            mCurrentPrintState = PrintState.PRINT_RAIL_TEMPLATE;
 
-			}
+            myPrintJob.print();
 
-		}
+        } catch (PrinterException pe) {
 
-	 public void printRailTemplate(double distanceFromRail, double skinThickness, double tailOffset, double noseOffset, boolean flatten) 
-	 {
-		 initPrint();
+            System.out.println("Error printing: " + pe);
 
-			try {
+        }
 
-				mDistanceToRail = distanceFromRail;
-				mSkinThickness = skinThickness;
-				mTailOffset = tailOffset;
-				mNoseOffset = noseOffset;
-				mFlatten = flatten;
-				mCurrentPrintState = PrintState.PRINT_RAIL_TEMPLATE;
+    }
 
-				myPrintJob.print();
+    public void printDeckSkinTemplate(double distanceFromRail) {
 
-			} catch(PrinterException pe) {
+        initPrint();
 
-				System.out.println("Error printing: " + pe);
+        try {
 
-			}
+            mDistanceToRail = distanceFromRail;
+            mCurrentPrintState = PrintState.PRINT_DECKSKIN_TEMPLATE;
 
-		}
+            myPrintJob.print();
 
-	 	public void printDeckSkinTemplate(double distanceFromRail) {
+        } catch (PrinterException pe) {
 
-			 initPrint();
+            System.out.println("Error printing: " + pe);
 
-			try {
+        }
 
-				mDistanceToRail = distanceFromRail;
-				mCurrentPrintState = PrintState.PRINT_DECKSKIN_TEMPLATE;
+    }
 
-				myPrintJob.print();
+    public void printBottomSkinTemplate(double distanceFromRail) {
 
-			} catch(PrinterException pe) {
+        initPrint();
 
-				System.out.println("Error printing: " + pe);
+        try {
 
-			}
+            mDistanceToRail = distanceFromRail;
+            mCurrentPrintState = PrintState.PRINT_BOTTOMSKIN_TEMPLATE;
 
-		}
+            myPrintJob.print();
 
-	 	public void printBottomSkinTemplate(double distanceFromRail) {
+        } catch (PrinterException pe) {
 
-			 initPrint();
+            System.out.println("Error printing: " + pe);
 
-			try {
+        }
 
-				mDistanceToRail = distanceFromRail;
-				mCurrentPrintState = PrintState.PRINT_BOTTOMSKIN_TEMPLATE;
+    }
 
-				myPrintJob.print();
+    public void printCrosssectionTemplate(double distanceFromRail, double skinThickness, double pos) {
 
-			} catch(PrinterException pe) {
+        initPrint();
 
-				System.out.println("Error printing: " + pe);
+        try {
 
-			}
+            mDistanceToRail = distanceFromRail;
+            mSkinThickness = skinThickness;
+            mCrosssectionPos = pos;
+            mCurrentPrintState = PrintState.PRINT_CROSSSECTION_TEMPLATE;
 
-		}
-	 	
-		 public void printCrosssectionTemplate(double distanceFromRail, double skinThickness, double pos) {
+            myPrintJob.print();
 
-			 initPrint();
+        } catch (PrinterException pe) {
 
-				try {
+            System.out.println("Error printing: " + pe);
 
-					mDistanceToRail = distanceFromRail;
-					mSkinThickness = skinThickness;
-					mCrosssectionPos = pos;
-					mCurrentPrintState = PrintState.PRINT_CROSSSECTION_TEMPLATE;
+        }
 
-					myPrintJob.print();
+    }
 
-				} catch(PrinterException pe) {
+    /**
+     *
+     * Paints the PrintBrd component. This method is
+     *
+     * invoked by the Swing component-painting system.
+     *
+     */
 
-					System.out.println("Error printing: " + pe);
+    public void paintComponent(Graphics g) {
 
-				}
+        /**
+         *
+         * Copy the graphics context so we can change it.
+         *
+         * Cast it to Graphics2D so we can use antialiasing.
+         *
+         */
 
-			}
+        Graphics2D g2d = (Graphics2D) g.create();
 
-		 /**
+        // Turn on antialiasing, so painting is smooth.
 
-	 * Paints the PrintBrd component.  This method is
+        g2d.setRenderingHint(
 
-	 * invoked by the Swing component-painting system.
+                RenderingHints.KEY_ANTIALIASING,
 
-	 */
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
-	public void paintComponent(Graphics g) {
+        // Paint the background.
 
-		/**
+        g2d.setColor(Color.WHITE);
 
-		 * Copy the graphics context so we can change it.
+        g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
 
-		 * Cast it to Graphics2D so we can use antialiasing.
+        Dimension dim = getSize();
 
-		 */
+        double border = 10;
 
-		Graphics2D g2d = (Graphics2D)g.create();
+        if (BoardCAD.getInstance().getCurrentBrd() == null || BoardCAD.getInstance().getCurrentBrd().isEmpty()) return;
 
+        JavaDraw jd = new JavaDraw(g2d);
 
+        // BezierBoardDrawUtil.printRailTemplate(jd, border, dim.height*2.0/5.0,
+        // (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()),
+        // true,BoardCAD.getInstance().getCurrentBrd(), 5.0, 0.8, 8.0, 15.0, trues);
+        // BezierBoardDrawUtil.printDeckSkinTemplate(jd, border, dim.height*3.0/5.0,
+        // (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()),
+        // true,BoardCAD.getInstance().getCurrentBrd(), 3.0);
+        // BezierBoardDrawUtil.printBottomSkinTemplate(jd, border, dim.height*4.0/5.0,
+        // (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()),
+        // true,BoardCAD.getInstance().getCurrentBrd(), 3.0);
+        // BezierBoardDrawUtil.printCrossSection(jd, border, dim.height*2.0/5.0,
+        // (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()),
+        // true,BoardCAD.getInstance().getCurrentBrd(), 50.0, 3.0, 0.8);
+        // BezierBoardDrawUtil.printCrossSection(jd, border, dim.height*2.0/5.0,
+        // (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()),
+        // true,BoardCAD.getInstance().getCurrentBrd(), 50.0);
+        BezierBoardDrawUtil.printProfile(
+                jd,
+                border,
+                dim.height * 2.0 / 5.0,
+                (dim.width - (border * 2)) / (BoardCAD.getInstance().getCurrentBrd().getLength()),
+                false,
+                BoardCAD.getInstance().getCurrentBrd(),
+                0.0,
+                0.0,
+                false,
+                0.0,
+                0.0);
+        BezierBoardDrawUtil.printProfile(
+                jd,
+                border,
+                dim.height * 2.0 / 5.0,
+                (dim.width - (border * 2)) / (BoardCAD.getInstance().getCurrentBrd().getLength()),
+                true,
+                BoardCAD.getInstance().getCurrentBrd(),
+                5.0,
+                0.0,
+                false,
+                0.0,
+                0.0);
+        BezierBoardDrawUtil.printProfile(
+                jd,
+                border,
+                dim.height * 2.0 / 5.0,
+                (dim.width - (border * 2)) / (BoardCAD.getInstance().getCurrentBrd().getLength()),
+                true,
+                BoardCAD.getInstance().getCurrentBrd(),
+                20.0,
+                0.0,
+                false,
+                0.0,
+                0.0);
 
-//		Turn on antialiasing, so painting is smooth.
+    }
 
-		g2d.setRenderingHint(
+    public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
 
-				RenderingHints.KEY_ANTIALIASING,
+        /*
+         * DEBUG!!!
+         *
+         * if(pageIndex >=2)
+         *
+         * {
+         *
+         * isPrintingProfile = false;
+         *
+         * isPrintingOutline = false;
+         *
+         * return NO_SUCH_PAGE;
+         *
+         * }
+         *
+         */
 
-				RenderingHints.VALUE_ANTIALIAS_ON);
+        switch (mCurrentPrintState) {
 
+        case PRINT_PROFILE_TEMPLATE: {
+            if (printProfileTemplate(pageFormat, pageIndex, g) == 0) return PAGE_EXISTS;
 
+            break;
+        }
 
-//		Paint the background.
+        case PRINT_RAIL_TEMPLATE: {
+            if (printRailTemplate(pageFormat, pageIndex, g) == 0) return PAGE_EXISTS;
 
-		g2d.setColor(Color.WHITE);
+            break;
+        }
 
-		g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+        case PRINT_DECKSKIN_TEMPLATE: {
+            if (printDeckSkinTemplate(pageFormat, pageIndex, g) == 0) return PAGE_EXISTS;
 
+            break;
+        }
 
+        case PRINT_BOTTOMSKIN_TEMPLATE: {
+            if (printBottomSkinTemplate(pageFormat, pageIndex, g) == 0) return PAGE_EXISTS;
 
-		Dimension dim = getSize();
+            break;
+        }
+        case PRINT_CROSSSECTION_TEMPLATE: {
+            if (printCrosssectionTemplate(pageFormat, pageIndex, g) == 0) return PAGE_EXISTS;
 
-		double border = 10;
+            break;
+        }
+        }
 
-		if(BoardCAD.getInstance().getCurrentBrd() == null || BoardCAD.getInstance().getCurrentBrd().isEmpty())
-			return;
-		
-		JavaDraw jd = new JavaDraw(g2d);
+        return NO_SUCH_PAGE;
 
-//		BezierBoardDrawUtil.printRailTemplate(jd, border, dim.height*2.0/5.0, (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()), true,BoardCAD.getInstance().getCurrentBrd(), 5.0, 0.8, 8.0, 15.0, trues);
-//		BezierBoardDrawUtil.printDeckSkinTemplate(jd, border, dim.height*3.0/5.0, (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()), true,BoardCAD.getInstance().getCurrentBrd(), 3.0);
-//		BezierBoardDrawUtil.printBottomSkinTemplate(jd, border, dim.height*4.0/5.0, (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()), true,BoardCAD.getInstance().getCurrentBrd(), 3.0);
-//		BezierBoardDrawUtil.printCrossSection(jd, border, dim.height*2.0/5.0, (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()), true,BoardCAD.getInstance().getCurrentBrd(), 50.0, 3.0, 0.8);
-//		BezierBoardDrawUtil.printCrossSection(jd, border, dim.height*2.0/5.0, (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()), true,BoardCAD.getInstance().getCurrentBrd(), 50.0);
-		BezierBoardDrawUtil.printProfile(jd, border, dim.height*2.0/5.0, (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()), false,BoardCAD.getInstance().getCurrentBrd(), 0.0, 0.0, false, 0.0, 0.0);
-		BezierBoardDrawUtil.printProfile(jd, border, dim.height*2.0/5.0, (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()), true,BoardCAD.getInstance().getCurrentBrd(), 5.0, 0.0, false, 0.0, 0.0);
-		BezierBoardDrawUtil.printProfile(jd, border, dim.height*2.0/5.0, (dim.width-(border*2))/(BoardCAD.getInstance().getCurrentBrd().getLength()), true,BoardCAD.getInstance().getCurrentBrd(), 20.0, 0.0, false, 0.0, 0.0);
+    }
 
-}
+    int printProfileTemplate(PageFormat pageFormat, int pageIndex, Graphics g) {
+        int widthInPages = (int) (BoardCAD.getInstance().getCurrentBrd().getLength()
+                / ((pageFormat.getImageableWidth() / 72) * 2.54)) + 2;
 
+        int heightInPages = (int) (BoardCAD.getInstance().getCurrentBrd().getMaxRocker()
+                / ((pageFormat.getImageableHeight() / 72) * 2.54)) + 1;
 
+        int xm = (int) pageFormat.getImageableX();
+        int ym = (int) pageFormat.getImageableY();
 
-	public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
+        if (pageIndex < widthInPages * heightInPages) {
 
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setFont(mPrintFontSmall);
 
-	
-			/*DEBUG!!!
-	
-	if(pageIndex >=2)
-	
-	{
-	
-	isPrintingProfile = false;
-	
-	isPrintingOutline = false;
-	
-	return NO_SUCH_PAGE;
-	
-	}
-	
-			 */
-		
-		switch(mCurrentPrintState)
-		{
-		
-			case PRINT_PROFILE_TEMPLATE:
-			{
-				if(printProfileTemplate(pageFormat, pageIndex, g) == 0)
-					return PAGE_EXISTS;		
-		
-				break;
-			}
-			
-			case PRINT_RAIL_TEMPLATE:
-			{
-				if(printRailTemplate(pageFormat, pageIndex, g) == 0)
-					return PAGE_EXISTS;		
-		
-				break;
-			}
-
-			case PRINT_DECKSKIN_TEMPLATE:
-			{
-				if(printDeckSkinTemplate(pageFormat, pageIndex, g) == 0)
-					return PAGE_EXISTS;		
-		
-				break;
-			}
-
-			case PRINT_BOTTOMSKIN_TEMPLATE:
-			{
-				if(printBottomSkinTemplate(pageFormat, pageIndex, g) == 0)
-					return PAGE_EXISTS;		
-		
-				break;
-			}
-			case PRINT_CROSSSECTION_TEMPLATE:
-			{
-				if(printCrosssectionTemplate(pageFormat, pageIndex, g) == 0)
-					return PAGE_EXISTS;		
-		
-				break;
-			}
-		}
-	
-		return NO_SUCH_PAGE;
-	
-	}
-	
-	int printProfileTemplate(PageFormat pageFormat, int pageIndex, Graphics g)
-	{
-		int widthInPages = (int)(BoardCAD.getInstance().getCurrentBrd().getLength()
-				/ ((pageFormat.getImageableWidth()/72)*2.54) ) + 2;
-		
-		int heightInPages = (int)(BoardCAD.getInstance().getCurrentBrd().getMaxRocker()
-				/ ((pageFormat.getImageableHeight()/72)*2.54)) + 1;
-		
-		int xm = (int)pageFormat.getImageableX();
-		int ym = (int)pageFormat.getImageableY();
-		
-		if (pageIndex < widthInPages*heightInPages) {
-		
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.setFont(mPrintFontSmall);
-		
-			FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
-			// get the height of a line of text in this font and render context
-			int hgt = metrics.getHeight();
-		
-			String mModelString = LanguageResource.getString("BOARDFILE_STR") + BoardCAD.getInstance().getCurrentBrd().getFilename() + LanguageResource.getString("PROFILE_STR");
-			String mRowString = LanguageResource.getString("ROW_STR")+ ((pageIndex%widthInPages)+1) + "/" + widthInPages;
-			String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex/widthInPages)+1) + "/" + heightInPages;
-		
-			g2d.setColor(Color.BLACK);
-			//g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
-			g.drawString(mModelString, xm, ym+(hgt+2)*1);
-			g.drawString(mRowString, xm, ym+(hgt+2)*2);
-			g.drawString(mColumnString, xm, ym+(hgt+2)*3);
-		
-			g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-		
-			BezierBoardDrawUtil.printProfile(new JavaDraw(g2d),
-					-pageFormat.getImageableWidth()*(pageIndex%widthInPages),
-					-pageFormat.getImageableHeight()*(pageIndex/widthInPages), 72/2.54, true, BoardCAD.getInstance().getCurrentBrd(), mProfileOffset, mSkinThickness, mFlatten, 0.0, 0.0);
-			
-			return 0;
-		}
-		
-		return -1;
-	}
-
-	int printRailTemplate(PageFormat pageFormat, int pageIndex, Graphics g)
-	{
-		int widthInPages = (int)(BoardCAD.getInstance().getCurrentBrd().getLength()
-				/ ((pageFormat.getImageableWidth()/72)*2.54) ) + 2;
-		
-		int heightInPages = (int)(BoardCAD.getInstance().getCurrentBrd().getMaxRocker()
-				/ ((pageFormat.getImageableHeight()/72)*2.54)) + 1;
-		
-		int xm = (int)pageFormat.getImageableX();
-		int ym = (int)pageFormat.getImageableY();
-		
-		if (pageIndex < widthInPages*heightInPages) {
-		
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.setFont(mPrintFontSmall);
-		
-			FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
-			// get the height of a line of text in this font and render context
-			int hgt = metrics.getHeight();
-		
-			String mModelString = LanguageResource.getString("BOARDFILE_STR") + BoardCAD.getInstance().getCurrentBrd().getFilename() + LanguageResource.getString("PROFILE_STR");
-			String mRowString = LanguageResource.getString("ROW_STR") + ((pageIndex%widthInPages)+1) + "/" + widthInPages;
-			String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex/widthInPages)+1) + "/" + heightInPages;
-		
-			g2d.setColor(Color.BLACK);
-			//g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
-			g.drawString(mModelString, xm, ym+(hgt+2)*1);
-			g.drawString(mRowString, xm, ym+(hgt+2)*2);
-			g.drawString(mColumnString, xm, ym+(hgt+2)*3);
-		
-			g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-		
-		
-		
-			BezierBoardDrawUtil.printRailTemplate(new JavaDraw(g2d),
-					-pageFormat.getImageableWidth()*(pageIndex%widthInPages),
-					-pageFormat.getImageableHeight()*(pageIndex/widthInPages), 72/2.54, true, BoardCAD.getInstance().getCurrentBrd(), mDistanceToRail, mSkinThickness, mTailOffset, mNoseOffset, mFlatten);
-			
-			return 0;
-		}
-		
-		return -1;
-	}
-
-	int printDeckSkinTemplate(PageFormat pageFormat, int pageIndex, Graphics g)
-	{
-		int widthInPages = (int)(BoardCAD.getInstance().getCurrentBrd().getLength()
-				/ ((pageFormat.getImageableWidth()/72)*2.54) ) + 2;
-		
-		int heightInPages = (int)((BoardCAD.getInstance().getCurrentBrd().getMaxWidth()/2.0)
-				/ ((pageFormat.getImageableHeight()/72)*2.54)) + 1;
-		
-		int xm = (int)pageFormat.getImageableX();
-		int ym = (int)pageFormat.getImageableY();
-		
-		if (pageIndex < widthInPages*heightInPages) {
-		
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.setFont(mPrintFontSmall);
-		
-			FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
-			// get the height of a line of text in this font and render context
-			int hgt = metrics.getHeight();
-		
-			String mModelString =LanguageResource.getString("BOARDFILE_STR") + BoardCAD.getInstance().getCurrentBrd().getFilename() + LanguageResource.getString("DECKSKINTEMPLATE_STR");
-			String mRowString = LanguageResource.getString("ROW_STR") + ((pageIndex%widthInPages)+1) + "/" + widthInPages;
-			String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex/widthInPages)+1) + "/" + heightInPages;
-		
-			g2d.setColor(Color.BLACK);
-			//g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
-			g.drawString(mModelString, xm, ym+(hgt+2)*1);
-			g.drawString(mRowString, xm, ym+(hgt+2)*2);
-			g.drawString(mColumnString, xm, ym+(hgt+2)*3);
-		
-			g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-		
-		
-		
-			BezierBoardDrawUtil.printDeckSkinTemplate(new JavaDraw(g2d),
-					-pageFormat.getImageableWidth()*(pageIndex%widthInPages),
-					-pageFormat.getImageableHeight()*(pageIndex/widthInPages), 72/2.54, true, BoardCAD.getInstance().getCurrentBrd(), mDistanceToRail);
-			
-			return 0;
-		}
-		
-		return -1;
-	}
-	
-	int printBottomSkinTemplate(PageFormat pageFormat, int pageIndex, Graphics g)
-	{
-		int widthInPages = (int)(BoardCAD.getInstance().getCurrentBrd().getLength()
-				/ ((pageFormat.getImageableWidth()/72)*2.54) ) + 2;
-		
-		int heightInPages = (int)((BoardCAD.getInstance().getCurrentBrd().getMaxWidth()/2.0)
-				/ ((pageFormat.getImageableHeight()/72)*2.54)) + 1;
-		
-		int xm = (int)pageFormat.getImageableX();
-		int ym = (int)pageFormat.getImageableY();
-		
-		if (pageIndex < widthInPages*heightInPages) {
-		
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.setFont(mPrintFontSmall);
-		
-			FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
-			// get the height of a line of text in this font and render context
-			int hgt = metrics.getHeight();
-		
-			String mModelString = LanguageResource.getString("BOARDFILE_STR") + BoardCAD.getInstance().getCurrentBrd().getFilename() + LanguageResource.getString("BOTTOMSKIN_STR");
-			String mRowString = LanguageResource.getString("ROW_STR")+ ((pageIndex%widthInPages)+1) + "/" + widthInPages;
-			String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex/widthInPages)+1) + "/" + heightInPages;
-		
-			g2d.setColor(Color.BLACK);
-			//g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
-			g.drawString(mModelString, xm, ym+(hgt+2)*1);
-			g.drawString(mRowString, xm, ym+(hgt+2)*2);
-			g.drawString(mColumnString, xm, ym+(hgt+2)*3);
-		
-			g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-		
-		
-		
-			BezierBoardDrawUtil.printBottomSkinTemplate(new JavaDraw(g2d),
-					-pageFormat.getImageableWidth()*(pageIndex%widthInPages),
-					-pageFormat.getImageableHeight()*(pageIndex/widthInPages), 72/2.54, true, BoardCAD.getInstance().getCurrentBrd(), mDistanceToRail);
-			
-			return 0;
-		}
-		
-		return -1;
-	}
-
-	int printCrosssectionTemplate(PageFormat pageFormat, int pageIndex, Graphics g)
-	{
-		int widthInPages = (int)(BoardCAD.getInstance().getCurrentBrd().getWidthAt(mCrosssectionPos)/2.0f
-				/ ((pageFormat.getImageableWidth()/72)*2.54) ) + 1;
-		
-		int heightInPages = (int)((BoardCAD.getInstance().getCurrentBrd().getMaxWidth()/2.0)
-				/ ((pageFormat.getImageableHeight()/72)*2.54)) + 1;
-		
-		int xm = (int)pageFormat.getImageableX();
-		int ym = (int)pageFormat.getImageableY();
-		
-		if (pageIndex < widthInPages*heightInPages) {
-		
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.setFont(mPrintFontSmall);
-		
-			FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
-			// get the height of a line of text in this font and render context
-			int hgt = metrics.getHeight();
-		
-			String mModelString = LanguageResource.getString("BOARDFILE_STR") + BoardCAD.getInstance().getCurrentBrd().getFilename() + " " +LanguageResource.getString("CROSSECTION_STR");
-			String mPosString = LanguageResource.getString("CROSSECTIONPOSITION_STR") + " " + UnitUtils.convertLengthToCurrentUnit(mCrosssectionPos, true); 
-			String mRowString = LanguageResource.getString("ROW_STR")+ ((pageIndex%widthInPages)+1) + "/" + widthInPages;
-			String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex/widthInPages)+1) + "/" + heightInPages;
-		
-			g2d.setColor(Color.BLACK);
-			//g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
-			g.drawString(mModelString, xm, ym+(hgt+2)*1);
-			g.drawString(mPosString, xm, ym+(hgt+2)*2);
-			g.drawString(mRowString, xm, ym+(hgt+2)*3);
-			g.drawString(mColumnString, xm, ym+(hgt+2)*4);
-		
-			g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-		
-			BezierBoardDrawUtil.printCrossSection(new JavaDraw(g2d),
-					-pageFormat.getImageableWidth()*(pageIndex%widthInPages),
-					-pageFormat.getImageableHeight()*(pageIndex/widthInPages), 72/2.54, true, BoardCAD.getInstance().getCurrentBrd(), mCrosssectionPos, mDistanceToRail, mSkinThickness);
-		
-			BezierBoardDrawUtil.printCrossSection(new JavaDraw(g2d),
-					-pageFormat.getImageableWidth()*(pageIndex%widthInPages),
-					-pageFormat.getImageableHeight()*(pageIndex/widthInPages), 72/2.54, true, BoardCAD.getInstance().getCurrentBrd(), mCrosssectionPos);
-
-			return 0;
-		}
-		
-		return -1;
-	}
+            FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
+            // get the height of a line of text in this font and render context
+            int hgt = metrics.getHeight();
+
+            String mModelString = LanguageResource.getString("BOARDFILE_STR")
+                    + BoardCAD.getInstance().getCurrentBrd().getFilename() + LanguageResource.getString("PROFILE_STR");
+            String mRowString = LanguageResource.getString("ROW_STR") + ((pageIndex % widthInPages) + 1) + "/" + widthInPages;
+            String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex / widthInPages) + 1) + "/"
+                    + heightInPages;
+
+            g2d.setColor(Color.BLACK);
+            // g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
+            g.drawString(mModelString, xm, ym + (hgt + 2) * 1);
+            g.drawString(mRowString, xm, ym + (hgt + 2) * 2);
+            g.drawString(mColumnString, xm, ym + (hgt + 2) * 3);
+
+            g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+            BezierBoardDrawUtil.printProfile(
+                    new JavaDraw(g2d),
+                    -pageFormat.getImageableWidth() * (pageIndex % widthInPages),
+                    -pageFormat.getImageableHeight() * (pageIndex / widthInPages),
+                    72 / 2.54,
+                    true,
+                    BoardCAD.getInstance().getCurrentBrd(),
+                    mProfileOffset,
+                    mSkinThickness,
+                    mFlatten,
+                    0.0,
+                    0.0);
+
+            return 0;
+        }
+
+        return -1;
+    }
+
+    int printRailTemplate(PageFormat pageFormat, int pageIndex, Graphics g) {
+        int widthInPages = (int) (BoardCAD.getInstance().getCurrentBrd().getLength()
+                / ((pageFormat.getImageableWidth() / 72) * 2.54)) + 2;
+
+        int heightInPages = (int) (BoardCAD.getInstance().getCurrentBrd().getMaxRocker()
+                / ((pageFormat.getImageableHeight() / 72) * 2.54)) + 1;
+
+        int xm = (int) pageFormat.getImageableX();
+        int ym = (int) pageFormat.getImageableY();
+
+        if (pageIndex < widthInPages * heightInPages) {
+
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setFont(mPrintFontSmall);
+
+            FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
+            // get the height of a line of text in this font and render context
+            int hgt = metrics.getHeight();
+
+            String mModelString = LanguageResource.getString("BOARDFILE_STR")
+                    + BoardCAD.getInstance().getCurrentBrd().getFilename() + LanguageResource.getString("PROFILE_STR");
+            String mRowString = LanguageResource.getString("ROW_STR") + ((pageIndex % widthInPages) + 1) + "/" + widthInPages;
+            String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex / widthInPages) + 1) + "/"
+                    + heightInPages;
+
+            g2d.setColor(Color.BLACK);
+            // g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
+            g.drawString(mModelString, xm, ym + (hgt + 2) * 1);
+            g.drawString(mRowString, xm, ym + (hgt + 2) * 2);
+            g.drawString(mColumnString, xm, ym + (hgt + 2) * 3);
+
+            g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+            BezierBoardDrawUtil.printRailTemplate(
+                    new JavaDraw(g2d),
+                    -pageFormat.getImageableWidth() * (pageIndex % widthInPages),
+                    -pageFormat.getImageableHeight() * (pageIndex / widthInPages),
+                    72 / 2.54,
+                    true,
+                    BoardCAD.getInstance().getCurrentBrd(),
+                    mDistanceToRail,
+                    mSkinThickness,
+                    mTailOffset,
+                    mNoseOffset,
+                    mFlatten);
+
+            return 0;
+        }
+
+        return -1;
+    }
+
+    int printDeckSkinTemplate(PageFormat pageFormat, int pageIndex, Graphics g) {
+        int widthInPages = (int) (BoardCAD.getInstance().getCurrentBrd().getLength()
+                / ((pageFormat.getImageableWidth() / 72) * 2.54)) + 2;
+
+        int heightInPages = (int) ((BoardCAD.getInstance().getCurrentBrd().getMaxWidth() / 2.0)
+                / ((pageFormat.getImageableHeight() / 72) * 2.54)) + 1;
+
+        int xm = (int) pageFormat.getImageableX();
+        int ym = (int) pageFormat.getImageableY();
+
+        if (pageIndex < widthInPages * heightInPages) {
+
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setFont(mPrintFontSmall);
+
+            FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
+            // get the height of a line of text in this font and render context
+            int hgt = metrics.getHeight();
+
+            String mModelString = LanguageResource.getString("BOARDFILE_STR")
+                    + BoardCAD.getInstance().getCurrentBrd().getFilename() + LanguageResource.getString("DECKSKINTEMPLATE_STR");
+            String mRowString = LanguageResource.getString("ROW_STR") + ((pageIndex % widthInPages) + 1) + "/" + widthInPages;
+            String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex / widthInPages) + 1) + "/"
+                    + heightInPages;
+
+            g2d.setColor(Color.BLACK);
+            // g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
+            g.drawString(mModelString, xm, ym + (hgt + 2) * 1);
+            g.drawString(mRowString, xm, ym + (hgt + 2) * 2);
+            g.drawString(mColumnString, xm, ym + (hgt + 2) * 3);
+
+            g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+            BezierBoardDrawUtil.printDeckSkinTemplate(
+                    new JavaDraw(g2d),
+                    -pageFormat.getImageableWidth() * (pageIndex % widthInPages),
+                    -pageFormat.getImageableHeight() * (pageIndex / widthInPages),
+                    72 / 2.54,
+                    true,
+                    BoardCAD.getInstance().getCurrentBrd(),
+                    mDistanceToRail);
+
+            return 0;
+        }
+
+        return -1;
+    }
+
+    int printBottomSkinTemplate(PageFormat pageFormat, int pageIndex, Graphics g) {
+        int widthInPages = (int) (BoardCAD.getInstance().getCurrentBrd().getLength()
+                / ((pageFormat.getImageableWidth() / 72) * 2.54)) + 2;
+
+        int heightInPages = (int) ((BoardCAD.getInstance().getCurrentBrd().getMaxWidth() / 2.0)
+                / ((pageFormat.getImageableHeight() / 72) * 2.54)) + 1;
+
+        int xm = (int) pageFormat.getImageableX();
+        int ym = (int) pageFormat.getImageableY();
+
+        if (pageIndex < widthInPages * heightInPages) {
+
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setFont(mPrintFontSmall);
+
+            FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
+            // get the height of a line of text in this font and render context
+            int hgt = metrics.getHeight();
+
+            String mModelString = LanguageResource.getString("BOARDFILE_STR")
+                    + BoardCAD.getInstance().getCurrentBrd().getFilename() + LanguageResource.getString("BOTTOMSKIN_STR");
+            String mRowString = LanguageResource.getString("ROW_STR") + ((pageIndex % widthInPages) + 1) + "/" + widthInPages;
+            String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex / widthInPages) + 1) + "/"
+                    + heightInPages;
+
+            g2d.setColor(Color.BLACK);
+            // g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
+            g.drawString(mModelString, xm, ym + (hgt + 2) * 1);
+            g.drawString(mRowString, xm, ym + (hgt + 2) * 2);
+            g.drawString(mColumnString, xm, ym + (hgt + 2) * 3);
+
+            g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+            BezierBoardDrawUtil.printBottomSkinTemplate(
+                    new JavaDraw(g2d),
+                    -pageFormat.getImageableWidth() * (pageIndex % widthInPages),
+                    -pageFormat.getImageableHeight() * (pageIndex / widthInPages),
+                    72 / 2.54,
+                    true,
+                    BoardCAD.getInstance().getCurrentBrd(),
+                    mDistanceToRail);
+
+            return 0;
+        }
+
+        return -1;
+    }
+
+    int printCrosssectionTemplate(PageFormat pageFormat, int pageIndex, Graphics g) {
+        int widthInPages = (int) (BoardCAD.getInstance().getCurrentBrd().getWidthAt(mCrosssectionPos) / 2.0f
+                / ((pageFormat.getImageableWidth() / 72) * 2.54)) + 1;
+
+        int heightInPages = (int) ((BoardCAD.getInstance().getCurrentBrd().getMaxWidth() / 2.0)
+                / ((pageFormat.getImageableHeight() / 72) * 2.54)) + 1;
+
+        int xm = (int) pageFormat.getImageableX();
+        int ym = (int) pageFormat.getImageableY();
+
+        if (pageIndex < widthInPages * heightInPages) {
+
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setFont(mPrintFontSmall);
+
+            FontMetrics metrics = g2d.getFontMetrics(mPrintFontSmall);
+            // get the height of a line of text in this font and render context
+            int hgt = metrics.getHeight();
+
+            String mModelString = LanguageResource.getString("BOARDFILE_STR")
+                    + BoardCAD.getInstance().getCurrentBrd().getFilename() + " "
+                    + LanguageResource.getString("CROSSECTION_STR");
+            String mPosString = LanguageResource.getString("CROSSECTIONPOSITION_STR") + " "
+                    + UnitUtils.convertLengthToCurrentUnit(mCrosssectionPos, true);
+            String mRowString = LanguageResource.getString("ROW_STR") + ((pageIndex % widthInPages) + 1) + "/" + widthInPages;
+            String mColumnString = LanguageResource.getString("COLUMN_STR") + ((pageIndex / widthInPages) + 1) + "/"
+                    + heightInPages;
+
+            g2d.setColor(Color.BLACK);
+            // g2d.setStroke(new BasicStroke((float)(1.0/mScale)));
+            g.drawString(mModelString, xm, ym + (hgt + 2) * 1);
+            g.drawString(mPosString, xm, ym + (hgt + 2) * 2);
+            g.drawString(mRowString, xm, ym + (hgt + 2) * 3);
+            g.drawString(mColumnString, xm, ym + (hgt + 2) * 4);
+
+            g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+            BezierBoardDrawUtil.printCrossSection(
+                    new JavaDraw(g2d),
+                    -pageFormat.getImageableWidth() * (pageIndex % widthInPages),
+                    -pageFormat.getImageableHeight() * (pageIndex / widthInPages),
+                    72 / 2.54,
+                    true,
+                    BoardCAD.getInstance().getCurrentBrd(),
+                    mCrosssectionPos,
+                    mDistanceToRail,
+                    mSkinThickness);
+
+            BezierBoardDrawUtil.printCrossSection(
+                    new JavaDraw(g2d),
+                    -pageFormat.getImageableWidth() * (pageIndex % widthInPages),
+                    -pageFormat.getImageableHeight() * (pageIndex / widthInPages),
+                    72 / 2.54,
+                    true,
+                    BoardCAD.getInstance().getCurrentBrd(),
+                    mCrosssectionPos);
+
+            return 0;
+        }
+
+        return -1;
+    }
+
+protected enum PrintState {
+        NO_STATE,
+        PRINT_DECKSKIN_TEMPLATE,
+        PRINT_BOTTOMSKIN_TEMPLATE,
+        PRINT_RAIL_TEMPLATE,
+        PRINT_PROFILE_TEMPLATE,
+        PRINT_CROSSSECTION_TEMPLATE
+    }
 }

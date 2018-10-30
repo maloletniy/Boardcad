@@ -23,6 +23,7 @@ import cadcore.NurbsSurface;
 
 public class BoardHandler {
 
+    public BoardDraw board_draw;
     private NurbsBoard active_board;
     private NurbsBoard boards[];
     private NurbsBoard blank;
@@ -35,8 +36,6 @@ public class BoardHandler {
     private double tolerance;
     private boolean viewblank;
     private boolean marked;
-
-    public BoardDraw board_draw;
 
     public BoardHandler() {
         nr_of_boards = 0;
@@ -54,28 +53,28 @@ public class BoardHandler {
 
     }
 
-    public void set_x(double x) {
-        active.x = x;
-    }
-
-    public void set_y(double y) {
-        active.y = y;
-    }
-
-    public void set_z(double z) {
-        active.z = z;
-    }
-
     public double get_x() {
         return active.x;
+    }
+
+    public void set_x(double x) {
+        active.x = x;
     }
 
     public double get_y() {
         return active.y;
     }
 
+    public void set_y(double y) {
+        active.y = y;
+    }
+
     public double get_z() {
         return active.z;
+    }
+
+    public void set_z(double z) {
+        active.z = z;
     }
 
     public int get_nr_of_boards() {
@@ -194,7 +193,7 @@ public class BoardHandler {
             active_board.export_stl(dataOut, filename);
         } catch (Exception e) {
             e.printStackTrace();
-        	throw e;
+            throw e;
         }
     }
 

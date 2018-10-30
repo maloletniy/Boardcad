@@ -1,18 +1,16 @@
 package boardcad.settings;
 
-public class SettingsAction
-{
-	String mValue;
+public class SettingsAction {
 
-	SettingsAction(final String value)
-	{
-		mValue = value;
-	}
+    String mValue;
 
-	@Override
-	public String toString()
-	{
-		return mValue;
-	}
+    SettingsAction(final String value) {
+        mValue = value;
+    }
+
+    @Override
+    public String toString() {
+        return mValue;
+    }
 
 }

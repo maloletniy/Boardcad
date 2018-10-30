@@ -14,7 +14,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -24,163 +23,154 @@ import boardcad.FileTools;
 import boardcad.i18n.LanguageResource;
 import boardcam.MachineConfig;
 
-public class MachineDialog extends JFrame implements KeyEventDispatcher,
-		WindowListener {
-	MachineView mMachineView = null;
-	MachineConfig mConfig = null;
+public class MachineDialog extends JFrame implements KeyEventDispatcher, WindowListener {
 
-	/**
-	 * This method initializes
-	 * 
-	 */
-	public MachineDialog(MachineConfig config) {
-		super();
+    MachineView mMachineView = null;
+    MachineConfig mConfig = null;
 
-		mConfig = config;
+    /**
+     * This method initializes
+     * 
+     */
+    public MachineDialog(MachineConfig config) {
+        super();
 
-		// Before initialize to set up config right
-		initialize();
+        mConfig = config;
 
-		mConfig.setMachineView(this.mMachineView);
+        // Before initialize to set up config right
+        initialize();
 
-		KeyboardFocusManager.getCurrentKeyboardFocusManager()
-				.addKeyEventDispatcher(this);
+        mConfig.setMachineView(this.mMachineView);
 
-		this.addWindowListener(this);
-	}
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
 
-	/**
-	 * This method initializes this
-	 * 
-	 */
-	private void initialize() {
+        this.addWindowListener(this);
+    }
 
-		this.setTitle(" " + LanguageResource.getString("MACHINETITLE_STR"));
-		this.setMinimumSize(new Dimension(640, 480));
-		this.setSize(new Dimension(1024, 768));
-		this.setLocationRelativeTo(null);
-		this.setLayout(new BorderLayout());
-		this.setPreferredSize(new Dimension(1024, 768));
-		//this.setAlwaysOnTop(true);
-		final MachineDialog myDialog = this;
+    /**
+     * This method initializes this
+     * 
+     */
+    private void initialize() {
 
-		// CNC JDialog Icon
-		try {
-			ImageIcon icon = new ImageIcon(getClass().getResource(
-					"icons/mill png 16x16.png"));
-			super.setIconImage(icon.getImage());
+        this.setTitle(" " + LanguageResource.getString("MACHINETITLE_STR"));
+        this.setMinimumSize(new Dimension(640, 480));
+        this.setSize(new Dimension(1024, 768));
+        this.setLocationRelativeTo(null);
+        this.setLayout(new BorderLayout());
+        this.setPreferredSize(new Dimension(1024, 768));
+        // this.setAlwaysOnTop(true);
+        final MachineDialog myDialog = this;
 
-		} catch (Exception e) {
-			System.out.println("CNC bezier JDialog icon error:\n"
-					+ e.getMessage());
-		}
+        // CNC JDialog Icon
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("icons/mill png 16x16.png"));
+            super.setIconImage(icon.getImage());
 
-		JButton generateButton = new JButton();
-		generateButton
-				.setText(LanguageResource.getString("GENERATEBUTTON_STR"));
-		generateButton.addActionListener(new java.awt.event.ActionListener() {
+        } catch (Exception e) {
+            System.out.println("CNC bezier JDialog icon error:\n" + e.getMessage());
+        }
 
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				final JFileChooser fc = new JFileChooser();
+        JButton generateButton = new JButton();
+        generateButton.setText(LanguageResource.getString("GENERATEBUTTON_STR"));
+        generateButton.addActionListener(new java.awt.event.ActionListener() {
 
-				fc.setCurrentDirectory(new File(BoardCAD.defaultDirectory));
-				try{
-					fc.setSelectedFile(new File(BoardCAD.defaultDirectory
-							+ FileTools.getFilename(BoardCAD.getInstance()
-									.getCurrentBrd().getFilename())));
-				}
-				catch(Exception ex)
-				{
-					//Do nothing, just trying to set a file to start with anyway
-				}
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                final JFileChooser fc = new JFileChooser();
 
-				int returnVal = fc.showSaveDialog(myDialog);
-				if (returnVal != JFileChooser.APPROVE_OPTION)
-					return;
+                fc.setCurrentDirectory(new File(BoardCAD.defaultDirectory));
+                try {
+                    fc.setSelectedFile(
+                            new File(
+                                    BoardCAD.defaultDirectory
+                                            + FileTools.getFilename(BoardCAD.getInstance().getCurrentBrd().getFilename())));
+                } catch (Exception ex) {
+                    // Do nothing, just trying to set a file to start with anyway
+                }
 
-				File file = fc.getSelectedFile();
+                int returnVal = fc.showSaveDialog(myDialog);
+                if (returnVal != JFileChooser.APPROVE_OPTION) return;
 
-				String filename = file.getPath(); // Load and display
-				// selection
-				if (filename == null)
-					return;
+                File file = fc.getSelectedFile();
 
-				BoardCAD.defaultDirectory = file.getPath();
+                String filename = file.getPath(); // Load and display
+                // selection
+                if (filename == null) return;
 
-				try {
-					filename = FileTools.setExtension(filename, "dnc");
-					mConfig.getToolpathGenerator().writeToolpath(filename,
-							mConfig.getBoard(), mConfig.getBlank());
-				} catch (Exception ex) {
-					String str = "Failed to write g-code file :"
-							+ ex.toString();
-					JOptionPane.showMessageDialog(BoardCAD.getInstance()
-							.getFrame(), str, "Error when writing g-code file",
-							JOptionPane.ERROR_MESSAGE);
+                BoardCAD.defaultDirectory = file.getPath();
 
-				}
-				mConfig.putPreferences();
-			}
-		});
+                try {
+                    filename = FileTools.setExtension(filename, "dnc");
+                    mConfig.getToolpathGenerator().writeToolpath(filename, mConfig.getBoard(), mConfig.getBlank());
+                } catch (Exception ex) {
+                    String str = "Failed to write g-code file :" + ex.toString();
+                    JOptionPane.showMessageDialog(
+                            BoardCAD.getInstance().getFrame(),
+                            str,
+                            "Error when writing g-code file",
+                            JOptionPane.ERROR_MESSAGE);
 
-		JPanel buttonPane = new JPanel();
-		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
-		buttonPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		buttonPane.add(Box.createHorizontalGlue());
-		buttonPane.add(generateButton);
+                }
+                mConfig.putPreferences();
+            }
+        });
 
-		mMachineView = new MachineView(mConfig);
-		this.add(mMachineView, BorderLayout.CENTER);
-		this.add(buttonPane, BorderLayout.PAGE_END);
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+        buttonPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(generateButton);
 
-		this.setVisible(true);
+        mMachineView = new MachineView(mConfig);
+        this.add(mMachineView, BorderLayout.CENTER);
+        this.add(buttonPane, BorderLayout.PAGE_END);
 
-		mMachineView.fit_all();
-	}
+        this.setVisible(true);
 
-	public MachineView getMachineView() {
-		return mMachineView;
-	}
+        mMachineView.fit_all();
+    }
 
-	public boolean dispatchKeyEvent(KeyEvent event) {
-		if(getFocusOwner() != null)
-		{
-			BrdInputCommand cmd = (BrdInputCommand) mMachineView.get2DView().getCurrentCommand();
-			return cmd.onKeyEvent(mMachineView.get2DView(), event);
-		}
-		return false;
-	}
+    public MachineView getMachineView() {
+        return mMachineView;
+    }
 
-	@Override
-	public void windowActivated(WindowEvent e) {
-	}
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (getFocusOwner() != null) {
+            BrdInputCommand cmd = (BrdInputCommand) mMachineView.get2DView().getCurrentCommand();
+            return cmd.onKeyEvent(mMachineView.get2DView(), event);
+        }
+        return false;
+    }
 
-	@Override
-	public void windowClosed(WindowEvent e) {
-	}
+    @Override
+    public void windowActivated(WindowEvent e) {
+    }
 
-	@Override
-	public void windowClosing(WindowEvent e) {
-		mConfig.putPreferences();
-		KeyboardFocusManager.getCurrentKeyboardFocusManager()
-		.removeKeyEventDispatcher(this);
+    @Override
+    public void windowClosed(WindowEvent e) {
+    }
 
-	}
+    @Override
+    public void windowClosing(WindowEvent e) {
+        mConfig.putPreferences();
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this);
 
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-	}
+    }
 
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-	}
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+    }
 
-	@Override
-	public void windowIconified(WindowEvent e) {
-	}
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+    }
 
-	@Override
-	public void windowOpened(WindowEvent e) {
-	}
+    @Override
+    public void windowIconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+    }
 
 } // @jve:decl-index=0:visual-constraint="10,10"
