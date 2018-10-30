@@ -1,9 +1,12 @@
 package board.readers;
 
 import java.awt.geom.Point2D;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,12 +38,11 @@ public class S3dReader {
         int ret = 0;
 
         brd.reset();
-
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new File(aFilename));
+            final ByteArrayInputStream inputStream = getFixedXmlAsInputStream(new File(aFilename));
+            Document document = builder.parse(inputStream);
 
             Element shape3Dnode = (Element) document.getElementsByTagName("Shape3d_design").item(0);
             Element boardNode = (Element) shape3Dnode.getElementsByTagName("Board").item(0);
@@ -222,6 +224,15 @@ public class S3dReader {
         }
 
         return ret;
+    }
+
+    // As Shape3d has invalid tags in structure it has to be fixed
+    private static ByteArrayInputStream getFixedXmlAsInputStream(File file) throws IOException {
+        final String fixedXml = Files.lines(file.toPath())
+                .map(l -> l.replace("<Ref. point>", "<RefPoint>")
+                    .replace("</Ref. point>", "</RefPoint>"))
+                .collect(Collectors.joining("\n"));
+        return new ByteArrayInputStream(fixedXml.getBytes());
     }
 
     static boolean readBezierAndGuidePoints(

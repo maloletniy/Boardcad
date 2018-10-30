@@ -198,7 +198,6 @@ class DesignPanel extends Panel implements AbstractEditor {
 
     public void update_3d() {
         rendered_view.update();
-
     }
 
     public void addModel(BranchGroup model) {

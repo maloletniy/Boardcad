@@ -186,18 +186,16 @@ public class BoardHandler {
     }
 
     public void export_board_stl(PrintStream dataOut, String filename) {
-        if (active_board == null) {
-            approximate_bezier(BoardCAD.getInstance().getCurrentBrd(), true);
-        }
-        try {
-            active_board.export_stl(dataOut, filename);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        if (active_board == null) approximate_bezier(BoardCAD.getInstance().getCurrentBrd(), true);
+
+        BoardCAD.getInstance().design_panel.update_3d();
+        active_board.export_stl(dataOut, filename);
     }
 
     public void export_board_dxf(PrintStream dataOut, String filename) {
+        if (active_board == null) approximate_bezier(BoardCAD.getInstance().getCurrentBrd(), true);
+
+        BoardCAD.getInstance().design_panel.update_3d();
         active_board.export_dxf(dataOut, filename);
     }
 

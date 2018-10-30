@@ -15,6 +15,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import cadcore.BezierBoardCrossSection;
 import cadcore.BezierKnot;
 import cadcore.BezierSpline;
@@ -1369,9 +1371,9 @@ public class NurbsBoard extends AbstractBoard implements Cloneable {
         dataOut.println("solid board");
 
         for (face = 0; face < nr_of_vertises; face++) {
-            // todo it should use object utils for equals otherwise npe
-            if (!vertises[face * 3].equals(vertises[face * 3 + 1]) && !vertises[face * 3].equals(vertises[face * 3 + 2])
-                    && !vertises[face * 3 + 1].equals(vertises[face * 3 + 2])) {
+            if (ObjectUtils.notEqual(vertises[face * 3], vertises[face * 3 + 1])
+                    && ObjectUtils.notEqual(vertises[face * 3], vertises[face * 3 + 2])
+                    && ObjectUtils.notEqual(vertises[face * 3 + 1], vertises[face * 3 + 2])) {
                 v1.sub(vertises[face * 3 + 1], vertises[face * 3]);
                 v2.sub(vertises[face * 3 + 2], vertises[face * 3]);
                 normal.cross(v1, v2);

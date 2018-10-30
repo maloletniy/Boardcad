@@ -98,7 +98,7 @@ public class BoardLoadAction extends AbstractAction {
 
         int ret = 0;
         String errorStr = "";
-        if (ext.compareToIgnoreCase("s3d") == 0) {
+        if (ext.compareToIgnoreCase("s3d") == 0 || ext.compareToIgnoreCase("s3dx") == 0) {
             ret = S3dReader.loadFile(mBrd, filename);
 
             if (ret == 1) // Show warning dialog
